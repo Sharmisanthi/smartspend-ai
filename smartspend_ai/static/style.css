@@ -1,0 +1,32 @@
+:root{--navy:#123c69;--green:#176b50;--mint:#eaf5ef;--bg:#f4f7fb;--text:#182230;--muted:#64748b;--line:#e5eaf1;--red:#b42318;--white:#fff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text)}
+    header{background:linear-gradient(115deg,#123c69,#176b50);color:#fff;padding:24px max(22px,calc((100% - 1200px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+    .brand{font-size:24px;font-weight:800;letter-spacing:-.5px}.brand span{color:#b7f0d1}.sub{color:#d8e8f6;margin-top:5px;font-size:13px}.header-right{font-size:13px;color:#e4f3ec}
+    main{max-width:1200px;margin:24px auto;padding:0 20px 36px}.welcome{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px}.welcome h1{font-size:25px;margin:0 0 5px}.muted{color:var(--muted);font-size:13px}
+    .grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(19,49,82,.035);min-width:0}.stat-label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}.stat-value{font-size:25px;font-weight:800;margin:12px 0 5px;letter-spacing:-.6px}.stat-note{font-size:12px;color:var(--muted)}.green{color:var(--green)}.red{color:var(--red)}
+    .main-grid{grid-template-columns:1.25fr .75fr;margin-bottom:18px}.charts{grid-template-columns:1fr 1fr;margin-bottom:18px}.section-title{font-size:16px;font-weight:750;margin:0 0 15px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:#475569;font-weight:650}.field input,.field select{width:100%;border:1px solid #d7e0eb;background:#fff;border-radius:9px;padding:11px;font:inherit;font-size:13px;min-width:0}.full{grid-column:1/-1}.btn{border:0;background:var(--green);color:#fff;padding:11px 14px;border-radius:9px;font-weight:700;cursor:pointer;font-size:13px}.btn:hover{filter:brightness(.94)}.btn-secondary{background:#edf3f8;color:var(--navy)}.btn-danger{background:#fff0ef;color:var(--red);padding:7px 9px}.budget-row{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:13px;margin:12px 0}.progress{height:9px;background:#edf1f6;border-radius:99px;overflow:hidden}.progress-bar{height:100%;background:var(--green);border-radius:99px}.progress-bar.over{background:#d92d20}.insight{display:flex;gap:10px;padding:12px;background:#f5faf7;border:1px solid #e0f0e7;border-radius:11px;margin:9px 0;font-size:13px;line-height:1.5}.insight-icon{font-size:17px}.alert{background:#fff8eb;border-color:#f9e4b7}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #edf0f5;font-size:12px}th{color:var(--muted);font-weight:650}td strong{font-size:13px}.pill{font-size:11px;border-radius:99px;padding:5px 8px;background:#e8f7ef;color:var(--green);font-weight:700}.pill.expense{background:#fff0ef;color:var(--red)}.flash{padding:11px 14px;border-radius:10px;margin-bottom:14px;font-size:13px}.flash.success{background:#e9f8ef;color:#176b50}.flash.error{background:#fff0ef;color:#b42318}.chart-wrap{height:260px;position:relative}.footnote{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px}.budget-form{display:flex;gap:8px}.budget-form input{flex:1;min-width:0;border:1px solid #d7e0eb;border-radius:9px;padding:10px}.header-badge{border:1px solid #ffffff40;border-radius:99px;padding:8px 11px}
+    @media(max-width:850px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.main-grid,.charts{grid-template-columns:1fr}}@media(max-width:480px){header{padding:20px}.brand{font-size:21px}main{padding:0 12px 24px;margin-top:16px}.stats{gap:10px}.card{padding:14px}.stat-value{font-size:21px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.welcome h1{font-size:22px}}
+/* SmartSpend AI — polished responsive styling */
+:root { color-scheme: light; }
+body { line-height: 1.5; background: #f3f6fb; }
+header { min-height: 86px; box-shadow: 0 5px 22px rgba(10, 38, 66, .12); }
+.brand { display:flex; align-items:center; gap:8px; }
+main { max-width: 1240px; }
+.welcome { margin-bottom: 20px; }
+.welcome h1 { letter-spacing: -.7px; }
+.card { transition: transform .18s ease, box-shadow .18s ease; box-shadow: 0 5px 20px rgba(17, 42, 74, .045); }
+.card:hover { box-shadow: 0 9px 26px rgba(17, 42, 74, .075); }
+.stats .card { position:relative; overflow:hidden; }
+.stats .card:before { content:""; position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg,#176b50,#70c5a0); }
+.stat-value { font-variant-numeric: tabular-nums; }
+.field input:focus,.field select:focus,.budget-form input:focus { outline:3px solid rgba(23,107,80,.14); border-color:#238664; }
+.btn { transition: transform .15s ease, box-shadow .15s ease, filter .15s ease; box-shadow: 0 2px 4px rgba(23,107,80,.12); }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(23,107,80,.18); }
+.btn:focus-visible { outline:3px solid #8ad8b6; outline-offset:2px; }
+th { background:#f8fafc; }
+tbody tr:hover { background:#f8fbfd; }
+.insight { align-items:flex-start; }
+.insight-icon { flex:0 0 auto; }
+.pill { text-transform:capitalize; }
+footer { color:var(--muted); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; scroll-behavior:auto !important; } }

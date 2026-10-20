@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartSpend AI | Smart Money Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header><div><div class="brand">◈ SmartSpend <span>AI</span></div><div class="sub">Spend mindfully. Save confidently.</div></div><div class="header-right"><span class="header-badge">{{ month_name }} · Personal finance</span></div></header>
+<main>
+  <div class="welcome"><div><h1>Your money overview</h1><div class="muted">A clearer picture of your spending, budget, and savings.</div></div><div class="muted">Updated {{ today }}</div></div>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+  <section class="grid stats">
+    <div class="card"><div class="stat-label">↗ Monthly income</div><div class="stat-value">₹{{ '{:,.0f}'.format(income) }}</div><div class="stat-note">Income recorded this month</div></div>
+    <div class="card"><div class="stat-label">↘ Monthly expenses</div><div class="stat-value">₹{{ '{:,.0f}'.format(expenses) }}</div><div class="stat-note">All recorded spending this month</div></div>
+    <div class="card"><div class="stat-label">◉ Net balance</div><div class="stat-value {{ 'green' if savings >= 0 else 'red' }}">₹{{ '{:,.0f}'.format(savings) }}</div><div class="stat-note">Income minus expenses</div></div>
+    <div class="card"><div class="stat-label">✦ Forecast this month</div><div class="stat-value">₹{{ '{:,.0f}'.format(forecast) }}</div><div class="stat-note">Simple daily-average estimate</div></div>
+  </section>
+  <section class="grid main-grid">
+    <div class="card"><h2 class="section-title">Add a transaction</h2>
+      <form action="{{ url_for('add_transaction') }}" method="post" class="form-grid">
+        <div class="field"><label for="kind">Transaction type</label><select name="kind" id="kind" required><option value="expense">Expense</option><option value="income">Income</option></select></div>
+        <div class="field" id="category-field"><label for="category">Category</label><select name="category" id="category">{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="amount">Amount (₹)</label><input id="amount" name="amount" type="number" min="1" step="0.01" placeholder="e.g. 250" required></div>
+        <div class="field"><label for="txn_date">Date</label><input id="txn_date" name="txn_date" type="date" value="{{ today }}" required></div>
+        <div class="field full"><label for="description">Description</label><input id="description" name="description" maxlength="120" placeholder="e.g. groceries, salary, bus pass"></div>
+        <div class="full"><button class="btn" type="submit">+ Save transaction</button></div>
+      </form>
+    </div>
+    <div class="card"><h2 class="section-title">Monthly budget</h2><div class="muted">Set a spending limit for {{ month_name }}.</div>
+      <div class="budget-row"><span>Spent <strong>₹{{ '{:,.0f}'.format(expenses) }}</strong></span><span>Budget <strong>₹{{ '{:,.0f}'.format(budget) }}</strong></span></div>
+      <div class="progress"><div class="progress-bar {{ 'over' if expenses > budget else '' }}" style="width:{{ budget_percent }}%"></div></div>
+      <div class="budget-row"><span>{{ '{:.0f}'.format((expenses / budget * 100) if budget else 0) }}% used</span><strong class="{{ 'red' if remaining_budget < 0 else 'green' }}">{% if remaining_budget >= 0 %}₹{{ '{:,.0f}'.format(remaining_budget) }} left{% else %}₹{{ '{:,.0f}'.format(-remaining_budget) }} over{% endif %}</strong></div>
+      <form action="{{ url_for('update_budget') }}" method="post" class="budget-form"><input name="monthly_budget" type="number" min="1" step="1" placeholder="New monthly budget" value="{{ budget|int }}" required><button class="btn" type="submit">Update</button></form>
+      <div class="footnote">The budget bar shows up to 100%; spending can exceed your budget.</div>
+    </div>
+  </section>
+  <section class="grid charts">
+    <div class="card"><h2 class="section-title">Where your money goes</h2><div class="chart-wrap"><canvas id="categoryChart" aria-label="Expense by category"></canvas></div></div>
+    <div class="card"><h2 class="section-title">Daily spending trend</h2><div class="chart-wrap"><canvas id="dailyChart" aria-label="Daily spending trend"></canvas></div></div>
+  </section>
+  <section class="grid main-grid">
+    <div class="card"><h2 class="section-title">Smart recommendations</h2>
+      {% for item in recommendations %}<div class="insight"><span class="insight-icon">✦</span><div>{{ item }}</div></div>{% endfor %}
+      {% if alerts %}<h3 class="section-title" style="margin-top:20px">Unusual spending to review</h3>{% for alert in alerts %}<div class="insight alert"><span class="insight-icon">⚠</span><div><strong>{{ alert.category }} · ₹{{ '{:,.0f}'.format(alert.amount) }}</strong><br>{{ alert.description }} on {{ alert.date }} is higher than twice the historical median expense. Check whether it is expected.</div></div>{% endfor %}{% else %}<div class="footnote">Unusual-spending alerts appear when there is enough transaction history to compare against.</div>{% endif %}
+      <div class="footnote">Insights are guidance based on the transactions entered here, not professional financial advice.</div>
+    </div>
+    <div class="card"><h2 class="section-title">How SmartSpend estimates spending</h2><div class="insight"><span class="insight-icon">📈</span><div><strong>Monthly forecast</strong><br>Current month's expenses ÷ days elapsed × days in month. It is a simple baseline estimate and may change as you record more transactions.</div></div><div class="insight"><span class="insight-icon">🔎</span><div><strong>Unusual spending</strong><br>Compares a transaction with the median of previous expenses. A flag is only a prompt to review, not proof of fraud.</div></div><div class="insight"><span class="insight-icon">🎯</span><div><strong>Savings suggestions</strong><br>Uses your budget, income, expenses, and largest spending category to produce basic personalized guidance.</div></div></div>
+  </section>
+  <section class="card"><div class="welcome"><div><h2 class="section-title" style="margin-bottom:4px">Recent transactions</h2><div class="muted">Your latest 50 recorded transactions.</div></div><form action="{{ url_for('reset_demo') }}" method="post" onsubmit="return confirm('Restore demo data? This replaces all current transactions.');"><button class="btn btn-secondary" type="submit">Restore demo data</button></form></div>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody>
+      {% for t in transactions %}<tr><td>{{ t['txn_date'] }}</td><td><span class="pill {{ 'expense' if t['kind']=='expense' else '' }}">{{ t['kind']|title }}</span></td><td>{{ t['category'] }}</td><td>{{ t['description'] or '—' }}</td><td><strong class="{{ 'red' if t['kind']=='expense' else 'green' }}">{{ '-' if t['kind']=='expense' else '+' }}₹{{ '{:,.2f}'.format(t['amount']) }}</strong></td><td><form action="{{ url_for('delete_transaction', transaction_id=t['id']) }}" method="post" onsubmit="return confirm('Delete this transaction?');"><button class="btn btn-danger" type="submit">Delete</button></form></td></tr>{% else %}<tr><td colspan="6">No transactions yet. Add one above to get started.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <p class="footnote" style="text-align:center;margin-top:18px">SmartSpend AI · Prototype for personal expense tracking · Data is stored locally in smartspend.db</p>
+</main>
+<script>
+  const kindSelect = document.getElementById('kind');
+  const categoryField = document.getElementById('category-field');
+  kindSelect.addEventListener('change', () => { categoryField.style.display = kindSelect.value === 'income' ? 'none' : 'flex'; });
+  const categoryLabels = {{ category_labels|tojson }};
+  const categoryValues = {{ category_values|tojson }};
+  const dailyLabels = {{ daily_labels|tojson }};
+  const dailyValues = {{ daily_values|tojson }};
+  Chart.defaults.font.family = 'Inter, Segoe UI, Arial, sans-serif';
+  Chart.defaults.color = '#64748b';
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut', data: {labels: categoryLabels, datasets: [{data: categoryValues, backgroundColor: ['#176b50','#123c69','#72b89a','#f0b45b','#6f86c7','#d98787','#8c78b8','#4da7b3','#a7b3c2'], borderWidth: 2, borderColor: '#fff'}]},
+    options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10, padding:14}}, tooltip:{callbacks:{label:(ctx)=>`${ctx.label}: ₹${Number(ctx.raw).toLocaleString('en-IN')}`}}}, cutout:'65%'}
+  });
+  new Chart(document.getElementById('dailyChart'), {
+    type:'line', data:{labels:dailyLabels, datasets:[{label:'Daily expenses (₹)', data:dailyValues, borderColor:'#176b50', backgroundColor:'rgba(23,107,80,.10)', fill:true, tension:.3, pointRadius:2, pointHoverRadius:5}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(ctx)=>`₹${Number(ctx.raw).toLocaleString('en-IN')}`}}}, scales:{y:{beginAtZero:true, grid:{color:'#edf1f6'}, ticks:{callback:(v)=>'₹'+v}}, x:{grid:{display:false}, ticks:{maxTicksLimit:8}}}}
+  });
+</script>
+</body></html>
